@@ -3,7 +3,7 @@
     /// <summary>
     /// Представялет ячейку игрового поля.
     /// </summary>
-    class GameCell
+    public class GameCell
     {
         /// <summary>
         /// Положение ячейки по оси X.

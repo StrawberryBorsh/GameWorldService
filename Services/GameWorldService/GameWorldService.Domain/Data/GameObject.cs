@@ -3,7 +3,7 @@
     /// <summary>
     /// Представляет базовый класс для всех игровых объектов.
     /// </summary>
-    abstract class GameObject
+    public abstract class GameObject
     {
         /// <summary>
         /// Положение объекта по оси X.

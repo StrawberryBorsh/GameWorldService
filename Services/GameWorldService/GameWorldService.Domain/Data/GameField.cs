@@ -3,7 +3,7 @@
     /// <summary>
     /// Представляет игровое поле.
     /// </summary>
-    class GameField
+    public class GameField
     {
         /// <summary>
         /// Имя игрока-владельца поля.

@@ -7,18 +7,31 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using GameWorldService.Domain.Logic;
+using Microsoft.OpenApi.Models;
+using GameWorldService.Logic.Clients;
+using GameWorldService.Logic.Services;
+using GameWorldService.Logic;
 
-namespace GameWorldService
+namespace GameWorldService.Api
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GameWorld API", Version = "v0" });
+            });
+
+            services.AddTransient<IInitializerServiceClient, InitializerServiceClient>();
+            services.AddSingleton<GameWorldServiceContext>();
+            services.AddSingleton<IDatabaseService, DatabaseService>();
+            services.AddSingleton<IGameWorldService, Domain.Logic.Impl.GameWorldService>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -26,14 +39,20 @@ namespace GameWorldService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "GameWorld API V0");
+                c.RoutePrefix = string.Empty;
+            });
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
     }

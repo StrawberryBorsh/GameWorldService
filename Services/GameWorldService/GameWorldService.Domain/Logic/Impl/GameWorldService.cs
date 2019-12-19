@@ -1,23 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using GameWorldService.Domain.Data;
-using GameWorldService.Domain.ExternalServices;
 
 namespace GameWorldService.Domain.Logic.Impl
 {
-    class GameWorldService : IGameWorldService
+    public class GameWorldService : IGameWorldService
     {
-        private readonly InitializerServiceClient _initializerService;
+        private readonly IDatabaseService _databaseService;
+        private readonly IInitializerServiceClient _initializerService;
 
-        public GameWorldService(InitializerServiceClient initializerService)
+        public GameWorldService(IDatabaseService databaseService, IInitializerServiceClient initializerService)
         {
+            _databaseService = databaseService;
             _initializerService = initializerService;
         }
 
-        public GameField GetField(string userName)
+        public GameField GetField(string nick)
         {
-            return _initializerService.InitializeField(userName);
+            var field = _databaseService.GetFieldByNick(nick);
+            if (field is null)
+            {
+                field = _initializerService.InitializeNewField();
+                field.FieldOwner = nick;
+                _databaseService.AddField(field);
+            }
+
+            return field;
         }
+
+        public IEnumerable<GameField> GetFields() =>
+            _databaseService.GetFields();
     }
 }

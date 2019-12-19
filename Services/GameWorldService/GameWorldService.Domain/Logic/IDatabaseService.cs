@@ -3,9 +3,11 @@ using GameWorldService.Domain.Data;
 
 namespace GameWorldService.Domain.Logic
 {
-    public interface IGameWorldService
+    public interface IDatabaseService
     {
-        GameField GetField(string nick);
+        void AddField(GameField field);
+
+        GameField GetFieldByNick(string nick);
 
         IEnumerable<GameField> GetFields();
     }
